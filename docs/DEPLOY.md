@@ -41,6 +41,41 @@ sudo ln -s /etc/nginx/sites-available/snaptask /etc/nginx/sites-enabled/
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
+## 二·B、Railway 部署(平台即服务)
+
+Railway 上需要**两个服务**,部署后页面左上角若仍显示「· Demo」,说明前端没探测到后端,按下面检查。
+
+### 1. 后端服务(Docker)
+
+- 类型:GitHub 仓库 → Dockerfile,根目录设为 `server/`
+- 环境变量(必填):
+
+| 变量 | 值 |
+| --- | --- |
+| `VISION_API_KEY` | 智谱 Key(**必填,未配置后端拒绝启动**,启动日志会提示) |
+| `JWT_SECRET` | ≥32 位随机串(生成命令见上文) |
+| `CORS_ORIGIN` | 前端域名,如 `https://snaptask-frontend.up.railway.app` |
+
+- 部署后验证:`https://<后端域名>/api/health` 应返回 `{"ok":true,...}`;若返回 502/崩溃,看日志确认 `VISION_API_KEY` 已生效。
+
+### 2. 前端服务(Static)
+
+- 类型:GitHub 仓库 → Static,根目录设为仓库根,构建命令 `npm run build`,输出目录 `dist`
+- 环境变量(构建期,必填):
+
+| 变量 | 值 |
+| --- | --- |
+| `VITE_API_BASE_URL` | `https://<后端域名>`(不带结尾斜杠) |
+
+- 改完必须**重新构建**(环境变量在构建期注入,改后需要触发新 build)。
+- 若前后端同域(nginx 反代),则不需要该变量,直接同源访问 `/api`。
+
+### 3. 验证顺序
+
+1. 后端 `/api/health` 返回 ok → 2. 前端打开后跳到**登录页**(说明已探测到后端)→ 3. 注册登录,顶部出现「云端」徽标,「· Demo」字样消失。
+
+> 注意:若只部署了前端、没部署后端(或后端因缺 `VISION_API_KEY` 起不来),页面会整体回退到本地 Demo 模式 —— 这是设计好的降级行为,不是前端开关没关。
+
 ## 三、HTTPS(certbot,免费证书)
 
 ```bash

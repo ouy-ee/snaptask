@@ -43,7 +43,7 @@ function InlineSourcePanel({ state, actions, onAddNew, onReplace, onDelete, onOp
     <div className="source-inline-body">{image.url ? <img src={image.url} alt={`截图:${image.name}`} /> : <p className="small muted">该图幅未保留原始图片。</p>}</div>
     <div className="source-inline-manage"><button type="button" className="btn btn-secondary btn-sm" onClick={() => replaceRef.current?.click()}><Icons.retry size={14} />替换此图</button><button type="button" className="btn btn-danger btn-sm" onClick={() => onDelete(image.id)}><Icons.trash size={14} />删除此图</button></div>
     <input ref={replaceRef} type="file" accept="image/png,image/jpeg,image/webp" hidden onChange={(e) => { replaceCurrent(e.target.files?.[0]); e.target.value = ''; }} />
-    <p className="source-inline-note xsmall muted">该区域由 mock 数据标注，仅用于演示来源追溯。</p>
+    <p className="source-inline-note xsmall muted">{state.mode === 'server' ? '高亮区域由云端 AI 识别标注,点击左侧图幅可查看来源定位。' : '该区域由 mock 数据标注，仅用于演示来源追溯。'}</p>
     <div className="source-inline-footer"><button type="button" className="btn btn-primary btn-sm" onClick={() => fileRef.current?.click()}><Icons.plus size={14} />添加新截图</button><button type="button" className="btn btn-secondary btn-sm" onClick={onOpenHistory}><Icons.folder size={14} />从历史图库选</button></div>{addInput}
   </aside>;
 }
@@ -146,7 +146,7 @@ export function ResultsPage() {
         </button>
         <button type="button" className="btn btn-primary" onClick={actions.returnHome}><Icons.home size={14} />返回首页</button>
         <span className="xsmall muted">
-          结果由本地 mock 服务生成(合成演示数据)。接入真实 AI 服务后,此处展示真实分析结果。
+          {state.mode === 'server' ? '结果由云端 AI 生成,每条结论均标注来源图幅。' : '结果由本地 mock 服务生成(合成演示数据)。接入真实 AI 服务后,此处展示真实分析结果。'}
         </span>
       </div>
     </div>

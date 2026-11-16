@@ -19,7 +19,7 @@ export function AnalysisProgress() {
         <h2 className="card-title">
           <Icons.scan size={17} />
           {retrying ? '正在重试分析…' : failed ? '分析未完成' : paused ? '分析已暂停' : '分析进行中'}
-          <span className="badge badge-neutral">本地模拟</span>
+          <span className="badge badge-neutral">{state.mode === 'server' ? '云端 AI' : '本地模拟'}</span>
         </h2>
         <span className="small muted tabular">{a.processed} / {a.total} 张图幅</span>
       </div>
@@ -97,7 +97,7 @@ export function AnalysisProgress() {
             <button type="button" className="btn btn-primary" onClick={paused ? actions.resumeAnalysis : actions.pauseAnalysis}>
               {paused ? <><Icons.play size={15} />继续分析</> : <><Icons.pause size={15} />暂停分析</>}
             </button>
-            <span className="xsmall muted">分析由 mock 服务模拟,预计 15 秒内完成</span>
+            <span className="xsmall muted">{state.mode === 'server' ? '云端 AI 分析中,预计 15~90 秒完成' : '分析由 mock 服务模拟,预计 15 秒内完成'}</span>
           </div>
         )}
       </div>

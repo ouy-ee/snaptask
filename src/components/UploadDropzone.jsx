@@ -102,8 +102,17 @@ export function UploadDropzone() {
       )}
 
       <div className="upload-notes">
-        <div className="note-item"><Icons.lock size={13} /> 截图仅在本页面内处理(演示模式),不会上传到服务器</div>
-        <div className="note-item"><Icons.info size={13} /> 分析由本地 mock 服务模拟,不会调用真实 AI 接口</div>
+        {state.mode === 'server' ? (
+          <>
+            <div className="note-item"><Icons.lock size={13} /> 截图经 HTTPS 加密上传到你的私有账号存储,仅用于本次分析</div>
+            <div className="note-item"><Icons.info size={13} /> 分析由云端 AI 服务完成,每条结论均标注来源图幅</div>
+          </>
+        ) : (
+          <>
+            <div className="note-item"><Icons.lock size={13} /> 截图仅在本页面内处理(演示模式),不会上传到服务器</div>
+            <div className="note-item"><Icons.info size={13} /> 分析由本地 mock 服务模拟,不会调用真实 AI 接口</div>
+          </>
+        )}
       </div>
 
       <button type="button" className="btn btn-primary btn-lg upload-cta" onClick={pick}>

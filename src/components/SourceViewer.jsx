@@ -79,7 +79,9 @@ export function SourceViewer() {
             </div>
           )}
           <p className="xsmall muted" style={{ marginTop: 'var(--s-4)' }}>
-            区域由 mock 数据标注,仅用于演示来源追溯。接入真实 AI 服务后,将展示模型返回的原文定位。
+            {state.mode === 'server'
+              ? '高亮区域由云端 AI 识别标注,点击来源标记即可定位原文。'
+              : '区域由 mock 数据标注,仅用于演示来源追溯。接入真实 AI 服务后,将展示模型返回的原文定位。'}
           </p>
         </div>
       </div>
