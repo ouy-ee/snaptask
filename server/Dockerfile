@@ -10,7 +10,7 @@ RUN npm ci --omit=dev
 COPY src ./src
 RUN mkdir -p /app/data
 
-VOLUME /app/data
+#VOLUME /app/data
 EXPOSE 8787
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
