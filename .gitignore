@@ -1,0 +1,39 @@
+# 依赖包
+node_modules/
+
+# 构建产物
+dist/
+build/
+
+# 环境变量（极其重要，绝不能提交真实 Key）
+.env
+.env.local
+.env.*.local
+
+# Python 产物 (针对 PaddleOCR 服务)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# 数据库和用户上传数据
+server/data/
+Thumbs.db
+
+# 编辑器/工具缓存（必须屏蔽，截图里的 .impeccable 就在这）
+.impeccable/
+.tooltest/
+.vite/
+.vscode/
+.idea/
+
+# 系统文件
+.DS_Store
+
+# 临时文档和作业（把你不小心放进去的 docx 屏蔽掉）
+*.docx
+
+# 测试覆盖率与日志(标准条目,之前版本包含,补回)
+coverage/
+*.log

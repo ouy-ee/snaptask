@@ -1,0 +1,28 @@
+# SnapTask 单机部署:后端 + 可选 PaddleOCR(免费 OCR)
+# 用法:
+#   cp .env.example .env 并填写 → docker compose up -d
+# 启用 PaddleOCR: docker compose --profile ocr up -d
+services:
+  snaptask:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "8787:8787"
+    volumes:
+      - ./data:/app/data
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8787/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # 自托管 PaddleOCR(开源免费,中文识别好)。
+  # 启用后把 .env 中 OCR_PROVIDER 改为 paddle。
+  paddleocr:
+    build: ./ocr
+    restart: unless-stopped
+    ports:
+      - "8788:8788"
+    profiles: ["ocr"]

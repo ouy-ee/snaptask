@@ -1,0 +1,97 @@
+/* ============================================================
+   SnapTask 设计系统 · 制图工作台(cartographic desk)
+   世界只贡献:字体、配色、密度、一个签名动作(图例色标追溯)
+   ============================================================ */
+
+:root {
+  /* ---- 地面与面板 ---- */
+  --ground: #f5f1e8;        /* 米白纸色 · 页面地面 */
+  --surface: #fbf8f1;       /* 暖白 · 卡片与面板 */
+  --surface-2: #efeadd;     /* 次级面板 · 侧栏/表头 */
+  --surface-3: #e7e0d0;     /* 更深一层 · 悬停/选中底 */
+
+  /* ---- 墨色文字 ---- */
+  --ink: #23211c;           /* 正文 */
+  --ink-2: #5c574c;         /* 次级文字 ≥4.5:1 on surface */
+  --ink-3: #7a7263;         /* 弱文字/占位 ≥4.5:1 on surface */
+  --ink-faint: #a89f8e;     /* 禁用 */
+
+  /* ---- 线条与投影 ---- */
+  --line: #ddd5c4;          /* 1px 分隔线 */
+  --line-strong: #c9bfab;
+  --shadow-1: 0 1px 2px rgba(35, 33, 28, 0.06), 0 2px 6px rgba(35, 33, 28, 0.05);
+  --shadow-2: 0 2px 4px rgba(35, 33, 28, 0.08), 0 8px 20px rgba(35, 33, 28, 0.10);
+  --shadow-3: 0 6px 16px rgba(35, 33, 28, 0.12), 0 16px 44px rgba(35, 33, 28, 0.14);
+
+  /* ---- 主色与强调 ---- */
+  --green: #4a5d4e;         /* 地形绿 · 主操作/导航 */
+  --green-strong: #39493d;
+  --green-soft: #e2e8df;    /* 绿底浅 */
+  --copper: #b4552d;        /* 铜红 · 强调/选中/焦点 */
+  --copper-strong: #94431f;
+  --copper-soft: #f3e2d6;
+
+  /* ---- 状态色 ---- */
+  --ok: #4e7a5a;            /* 苔绿 · 成功 */
+  --ok-soft: #e1e9e0;
+  --warn: #a9712f;          /* 琥珀 · 警告 */
+  --warn-soft: #f2e7d4;
+  --danger: #b03a2e;        /* 砖红 · 错误/高危 */
+  --danger-soft: #f3dfda;
+  --info: #3e5c76;          /* 索引蓝 · 信息 */
+  --info-soft: #e0e8ee;
+
+  /* ---- 图例色标(来源截图编号,六色轮转) ---- */
+  --legend-1: #b4552d;      /* 铜红 */
+  --legend-2: #4e7a5a;      /* 苔绿 */
+  --legend-3: #a9712f;      /* 琥珀 */
+  --legend-4: #3e5c76;      /* 索引蓝 */
+  --legend-5: #6e5a7d;      /* 紫灰 */
+  --legend-6: #4e7e80;      /* 青灰 */
+  --legend-1-soft: #f3e2d6;
+  --legend-2-soft: #e1e9e0;
+  --legend-3-soft: #f2e7d4;
+  --legend-4-soft: #e0e8ee;
+  --legend-5-soft: #e9e3ee;
+  --legend-6-soft: #dfeaea;
+
+  /* ---- 字体 ---- */
+  --font-ui: "Segoe UI", system-ui, -apple-system, "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Source Han Sans SC",
+    sans-serif;
+  --font-label: var(--font-ui);
+
+  /* ---- 字号(固定 rem 比例,1.125–1.2 步进) ---- */
+  --fs-xs: 0.75rem;    /* 12px 小标注/图例 */
+  --fs-sm: 0.8125rem;  /* 13px 辅助 */
+  --fs-md: 0.875rem;   /* 14px 正文 */
+  --fs-lg: 1rem;       /* 16px 强调正文 */
+  --fs-xl: 1.1875rem;  /* 19px 小标题 */
+  --fs-2xl: 1.5rem;    /* 24px 面板标题 */
+  --fs-3xl: 1.875rem;  /* 30px 页面标题/一句话摘要 */
+
+  /* ---- 间距(4px 基) ---- */
+  --s-1: 0.25rem;
+  --s-2: 0.5rem;
+  --s-3: 0.75rem;
+  --s-4: 1rem;
+  --s-5: 1.25rem;
+  --s-6: 1.5rem;
+  --s-7: 2rem;
+  --s-8: 2.75rem;
+  --s-9: 3.5rem;
+
+  /* ---- 圆角 ---- */
+  --r-sm: 3px;
+  --r-md: 6px;
+  --r-lg: 10px;
+
+  /* ---- 动效 ---- */
+  --ease: cubic-bezier(0.3, 0.9, 0.35, 1);
+  --t-fast: 120ms var(--ease);
+  --t-mid: 200ms var(--ease);
+
+  /* ---- 布局 ---- */
+  --nav-h: 52px;
+  --radius-focus: 2px;
+}

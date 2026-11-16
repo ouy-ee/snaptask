@@ -1,0 +1,94 @@
+/* 登录页与启动屏样式(设计 token 见 tokens.css) */
+
+.boot-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-md, 14px);
+  color: var(--color-text-muted, #64748b);
+}
+
+.login-layout {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  padding: 28px 24px 20px;
+}
+
+.login-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.login-brand-mark {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--color-text, #0f172a);
+}
+
+.login-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--color-border, #e2e8f0);
+  margin-bottom: 18px;
+}
+
+.login-tabs button {
+  flex: 1;
+  padding: 10px 0;
+  border: none;
+  background: none;
+  font: inherit;
+  color: var(--color-text-muted, #64748b);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+.login-tabs button.active {
+  color: var(--color-text, #0f172a);
+  border-bottom-color: var(--color-primary, #2563eb);
+  font-weight: 600;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.login-error {
+  font-size: var(--font-size-sm, 13px);
+  color: var(--color-danger, #dc2626);
+  margin: 0;
+}
+
+.login-note {
+  margin-top: 16px;
+  text-align: center;
+  line-height: 1.6;
+}
+
+/* 账号设置页 */
+.settings-card { max-width: 460px; }
+.settings-section-title {
+  font-size: var(--font-size-sm, 13px);
+  font-weight: 700;
+  color: var(--color-text-muted, #64748b);
+  margin: 8px 0 0;
+  letter-spacing: 0.02em;
+}
+.settings-notice { font-size: var(--font-size-sm, 13px); color: var(--color-success, #16a34a); margin: 0; }
+.settings-danger { border-top: 1px solid var(--color-border, #e2e8f0); padding-top: 12px; margin-top: 6px; }
+.danger-text { color: var(--color-danger, #dc2626); }
