@@ -38,7 +38,13 @@ export function friendlyMessage(err) {
   if (!err) return '操作失败';
   if (err instanceof OfflineError) return '网络连接失败,请检查网络后重试';
   if (err instanceof SessionExpiredError) return '登录已过期,请重新登录';
-  if (err instanceof ApiError) return err.message;
+  if (err instanceof ApiError) {
+    if (err.status === 429 || err.code === 'RATE_LIMITED') return '操作太频繁,请稍后再试';
+    if (err.code === 'USER_NOT_FOUND') return '该邮箱尚未注册,请先注册';
+    if (err.code === 'INVALID_PASSWORD' || err.code === 'INVALID_CREDENTIALS') return '邮箱或密码不正确';
+    if (err.code === 'EMAIL_TAKEN') return '该邮箱已注册,请直接登录';
+    return err.message;
+  }
   return err.message || '操作失败';
 }
 

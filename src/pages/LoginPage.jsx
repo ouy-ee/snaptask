@@ -2,7 +2,7 @@
    登录 / 注册页(云端模式)。复用设计系统 token(tokens.css)。
    ============================================================ */
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useStore } from '../state/store';
 import { friendlyMessage } from '../api/service';
@@ -16,6 +16,13 @@ export function LoginPage() {
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+
+  // 登录页不承接上一轮工作台的认证提示,避免“已退出”与本次结果叠加。
+  useEffect(() => {
+    actions.clearToasts();
+    // 只在进入登录页时执行一次。
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!state.booted) {
     return <div className="boot-screen" aria-live="polite">SnapTask 启动中…</div>;
@@ -31,12 +38,20 @@ export function LoginPage() {
       setError('请填写邮箱与密码');
       return;
     }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      setError('请输入有效的邮箱地址');
+      return;
+    }
     if (tab === 'register' && !name.trim()) {
       setError('请填写称呼');
       return;
     }
     if (tab === 'register' && password.length < 8) {
       setError('密码至少 8 位');
+      return;
+    }
+    if (tab === 'register' && password.length > 72) {
+      setError('密码不能超过 72 位');
       return;
     }
     setBusy(true);

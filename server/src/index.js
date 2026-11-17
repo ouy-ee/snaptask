@@ -13,13 +13,12 @@ import { purgeRecycle, orphanUploadCleanup, purgeExpiredTokens } from './service
 
 const config = loadConfig(process.env);
 
-/* 启动前置检查:视觉模型必须配置真实 API Key,否则直接退出。
-   占位符(your_api_key_here)在 loadConfig 中已被视为未配置;
-   Ollama 本地模型无需 Key,单独豁免。 */
+/* AI 配置不应阻断认证、文件夹和历史记录服务。
+   未配置 Key 时仅在真正发起分析请求时返回 VISION_NOT_CONFIGURED，
+   这样用户仍可注册、登录并管理云端数据。 */
 if (config.vision.provider !== 'ollama' && !config.vision.apiKey) {
-  console.error('❌ 启动失败:请先在 server/.env 中配置真实的 VISION_API_KEY');
-  console.error('   (模板占位符 your_api_key_here 不会生效;免费 Key 获取方式见 docs/COSTS.md)');
-  process.exit(1);
+  console.warn('⚠️ 未配置 VISION_API_KEY，AI 分析暂不可用；认证与数据接口仍会启动。');
+  console.warn('   请在需要分析前配置 server/.env 中的 VISION_API_KEY。');
 }
 
 if (config.jwt.secretIsDefault) {

@@ -75,8 +75,9 @@ export function authRouter(ctx) {
     try {
       const { email, password } = req.body;
       const user = findActiveUser(db, email);
-      const ok = user && (await verifyPassword(password, user.password_hash));
-      if (!ok) throw unauthorized('INVALID_CREDENTIALS', '邮箱或密码不正确');
+      if (!user) throw unauthorized('USER_NOT_FOUND', '该邮箱尚未注册,请先注册');
+      const ok = await verifyPassword(password, user.password_hash);
+      if (!ok) throw unauthorized('INVALID_PASSWORD', '密码不正确');
       audit(db, user.id, 'user.login', 'user', user.id);
       res.json({ user: publicUser(user), ...tokenPair(ctx, user.id) });
     } catch (err) {

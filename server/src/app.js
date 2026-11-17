@@ -59,6 +59,14 @@ export function createApp(ctx) {
     limit: config.rateLimit.authMax,
     standardHeaders: true,
     legacyHeaders: false,
+    handler: (req, res) => {
+      res.status(429).json({
+        error: {
+          code: 'RATE_LIMITED',
+          message: '登录或注册尝试过于频繁,请稍后再试',
+        },
+      });
+    },
   });
   const apiLimiter = rateLimit({
     windowMs: config.rateLimit.windowMs,

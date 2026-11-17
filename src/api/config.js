@@ -30,7 +30,8 @@ export function setModeForTest(mode) {
 export async function detectMode() {
   try {
     const res = await fetch(`${API_BASE}/api/health`, { signal: AbortSignal.timeout(2500) });
-    currentMode = res.ok ? 'server' : 'local';
+    const data = await res.json().catch(() => null);
+    currentMode = res.ok && data?.ok === true && data?.service === 'snaptask-server' ? 'server' : 'local';
   } catch {
     currentMode = 'local';
   }

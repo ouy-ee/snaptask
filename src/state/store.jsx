@@ -104,7 +104,7 @@ function editResult(state, updater) {
 export function reducer(state, action) {
   switch (action.type) {
     case 'MODE_SET':
-      return { ...state, mode: action.mode };
+      return { ...state, mode: action.mode, ...(action.mode === 'server' ? { user: null } : {}) };
     case 'BOOT_DONE':
       return { ...state, booted: true };
 
@@ -598,8 +598,12 @@ export function reducer(state, action) {
 
     case 'TOAST_PUSH':
       return withToast(state, action.toast);
+    case 'TOAST_REPLACE':
+      return withToast({ ...state, toasts: [] }, action.toast);
     case 'TOAST_DISMISS':
       return { ...state, toasts: state.toasts.filter((t) => t.id !== action.id) };
+    case 'TOAST_CLEAR':
+      return { ...state, toasts: [] };
 
     case 'OPEN_SOURCE_VIEWER':
       return { ...state, sourceViewer: action.payload };
@@ -655,13 +659,20 @@ function remapResult(result, images) {
 
 export function StoreProvider({ children, boot = true, testState = null }) {
   const [state, dispatch] = useReducer(reducer, testState || initialState);
+  const bootingRef = useRef(Boolean(boot));
+  const userRef = useRef(state.user);
+  const authTransitionRef = useRef(false);
   const runRef = useRef(null);
   const analysisJobRef = useRef(null);
   const confirmActionRef = useRef(null);
+  userRef.current = state.user;
 
   const actions = useMemo(() => {
     const toast = (kind, text, timeout = 3600) => {
       dispatch({ type: 'TOAST_PUSH', toast: { kind, text, timeout } });
+    };
+    const authToast = (kind, text, timeout = 3600) => {
+      dispatch({ type: 'TOAST_REPLACE', toast: { kind, text, timeout } });
     };
 
     const isServer = () => state.mode === 'server';
@@ -1231,11 +1242,15 @@ export function StoreProvider({ children, boot = true, testState = null }) {
 
     /* ---------- 账号 ---------- */
     const signIn = async (payload) => {
+      // 一次认证操作只允许留下本次结果,避免上一轮注册/退出提示叠加。
+      dispatch({ type: 'TOAST_CLEAR' });
+      authTransitionRef.current = true;
       if (!isServer()) {
         const user = { name: payload.name?.trim() || '本地用户', email: payload.email?.trim() || 'demo@local' };
         localStorage.setItem(USER_KEY, JSON.stringify(user));
         dispatch({ type: 'AUTH_SET', user });
-        toast('ok', `欢迎回来，${user.name}`);
+        authTransitionRef.current = false;
+        authToast('ok', `欢迎回来，${user.name}`);
         return { ok: true };
       }
       try {
@@ -1245,25 +1260,33 @@ export function StoreProvider({ children, boot = true, testState = null }) {
         setTokens(res);
         const data = await serverApi.bootstrap();
         dispatch({ type: 'SESSION_SET', user: res.user, folders: data.folders, history: data.history, urgentTasks: data.tasks, archives: data.archives });
-        toast('ok', `欢迎回来，${res.user.name}`);
+        localStorage.removeItem(USER_KEY);
+        authToast('ok', `欢迎回来，${res.user.name}`);
         return { ok: true };
       } catch (err) {
-        toast('error', friendlyMessage(err));
+        // 登录页会展示可恢复的内联错误,这里不再额外创建 Toast。
         return { ok: false, error: err };
+      } finally {
+        authTransitionRef.current = false;
       }
     };
     const signOut = async () => {
+      dispatch({ type: 'TOAST_CLEAR' });
+      authTransitionRef.current = true;
       if (isServer()) {
         await serverApi.auth.logout();
         clearTokens();
+        localStorage.removeItem(USER_KEY);
         dispatch({ type: 'SESSION_SET', user: null, folders: [], history: [], urgentTasks: [], archives: [] });
         broadcastSync('auth');
-        toast('info', '已退出登录');
+        authTransitionRef.current = false;
+        authToast('info', '已退出登录');
         return;
       }
       localStorage.removeItem(USER_KEY);
       dispatch({ type: 'AUTH_SET', user: null });
-      toast('info', '已退出本地账号');
+      authTransitionRef.current = false;
+      authToast('info', '已退出本地账号');
     };
     const loadHistory = async (id) => {
       if (isServer()) {
@@ -1426,6 +1449,7 @@ export function StoreProvider({ children, boot = true, testState = null }) {
       redo: () => dispatch({ type: 'REDO' }),
 
       dismissToast: (id) => dispatch({ type: 'TOAST_DISMISS', id }),
+      clearToasts: () => dispatch({ type: 'TOAST_CLEAR' }),
       openSourceViewer: (payload) => dispatch({ type: 'OPEN_SOURCE_VIEWER', payload }),
       closeSourceViewer: () => dispatch({ type: 'CLOSE_SOURCE_VIEWER' }),
       flash: (id) => dispatch({ type: 'FLASH_SET', id }),
@@ -1459,6 +1483,7 @@ export function StoreProvider({ children, boot = true, testState = null }) {
         }
       }
       if (!cancelled) dispatch({ type: 'BOOT_DONE' });
+      bootingRef.current = false;
     })();
     return () => {
       cancelled = true;
@@ -1471,7 +1496,10 @@ export function StoreProvider({ children, boot = true, testState = null }) {
       onSessionExpired(() => {
         clearTokens();
         dispatch({ type: 'AUTH_SET', user: null });
-        dispatch({ type: 'TOAST_PUSH', toast: { kind: 'error', text: '登录已过期,请重新登录', timeout: 5000 } });
+        // 已经退出或正在登录页时,不要把后台旧请求的 401 再显示成新的过期提示。
+        if (!bootingRef.current && userRef.current && !authTransitionRef.current) {
+          dispatch({ type: 'TOAST_REPLACE', toast: { kind: 'error', text: '登录已过期,请重新登录', timeout: 5000 } });
+        }
       }),
     []
   );

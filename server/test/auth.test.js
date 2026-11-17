@@ -57,7 +57,7 @@ describe('auth', () => {
       await registerUser(app, { email: 'pw@test.local' });
       const bad = await request(app).post('/api/auth/login').send({ email: 'pw@test.local', password: 'wrong-password' });
       expect(bad.status).toBe(401);
-      expect(bad.body.error.code).toBe('INVALID_CREDENTIALS');
+      expect(bad.body.error.code).toBe('INVALID_PASSWORD');
 
       const weak = await request(app).post('/api/auth/register').send({ name: 'x', email: 'weak@test.local', password: '123' });
       expect(weak.status).toBe(422);
