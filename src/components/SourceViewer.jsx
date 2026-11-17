@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useStore } from '../state/store';
 import { Icons } from '../lib/icons';
 import { legendClass, formatBytes } from '../lib/utils';
+import { resolveApiUrl } from '../api/config';
 
 /* 来源图幅查看抽屉:点击任何来源标记后从右侧滑出,
    展示该图大图,并高亮被引用的标注区域(如有) */
@@ -46,7 +47,7 @@ export function SourceViewer() {
           </div>
           {image.url ? (
             <div className="srcview-stage">
-              <img src={image.url} alt={`截图:${image.name}`} />
+              <img src={resolveApiUrl(image.url)} alt={`截图:${image.name}`} />
               {image.regions?.map((r) => {
                 const active = r.id === viewer.regionId;
                 return (

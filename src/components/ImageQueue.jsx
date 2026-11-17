@@ -1,6 +1,7 @@
 import { useStore } from '../state/store';
 import { Icons } from '../lib/icons';
 import { legendClass } from '../lib/utils';
+import { resolveApiUrl } from '../api/config';
 
 /* 图幅队列(工作区左栏):缩略图 + 图例色标 + 顺序调整 + 删除 */
 export function ImageQueue() {
@@ -30,7 +31,7 @@ export function ImageQueue() {
               aria-label={`预览第 ${img.legendIndex} 张:${img.name}`}
               onClick={() => actions.setCurrent(img.id)}
             >
-              <img src={img.url} alt="" loading="lazy" />
+              <img src={resolveApiUrl(img.url)} alt="" loading="lazy" />
               <span className={`legend-dot legend-dot-lg ${legendClass(img.legendIndex)}`}>{img.legendIndex}</span>
               {img.quality.score < 70 && (
                 <span className="queue-flag" title="图幅质量较低">

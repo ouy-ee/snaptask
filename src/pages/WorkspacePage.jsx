@@ -4,6 +4,7 @@ import { ImageQueue } from '../components/ImageQueue';
 import { ImagePreview } from '../components/ImagePreview';
 import { Icons } from '../lib/icons';
 import { formatBytes } from '../lib/utils';
+import { resolveApiUrl } from '../api/config';
 
 const ACCEPT = 'image/png,image/jpeg,image/webp';
 
@@ -128,7 +129,7 @@ export function WorkspacePage() {
           </div>
         </section>
       </aside>
-      {historyOpen && <div className="modal-backdrop" onMouseDown={() => setHistoryOpen(false)}><div className="modal history-image-modal" onMouseDown={(e) => e.stopPropagation()}><div className="modal-header row"><h2 className="card-title">从历史图库选择</h2><button type="button" className="icon-btn" onClick={() => setHistoryOpen(false)} aria-label="关闭"><Icons.x size={17} /></button></div><div className="history-image-grid">{historyImages.length ? historyImages.map((image, index) => <button type="button" className="history-image-option" key={`${image.id}-${index}`} onClick={() => { actions.restoreImage(image); setHistoryOpen(false); }}><img src={image.url} alt="" /><span className="ellipsis">{image.name}</span><span className="xsmall muted">{image.sourceTitle}</span></button>) : <div className="empty-state"><Icons.image size={24} /><h3>历史图库为空</h3><p className="small">保存分析结果后，截图会出现在这里。</p></div>}</div></div></div>}
+      {historyOpen && <div className="modal-backdrop" onMouseDown={() => setHistoryOpen(false)}><div className="modal history-image-modal" onMouseDown={(e) => e.stopPropagation()}><div className="modal-header row"><h2 className="card-title">从历史图库选择</h2><button type="button" className="icon-btn" onClick={() => setHistoryOpen(false)} aria-label="关闭"><Icons.x size={17} /></button></div><div className="history-image-grid">{historyImages.length ? historyImages.map((image, index) => <button type="button" className="history-image-option" key={`${image.id}-${index}`} onClick={() => { actions.restoreImage(image); setHistoryOpen(false); }}><img src={resolveApiUrl(image.url)} alt="" /><span className="ellipsis">{image.name}</span><span className="xsmall muted">{image.sourceTitle}</span></button>) : <div className="empty-state"><Icons.image size={24} /><h3>历史图库为空</h3><p className="small">保存分析结果后，截图会出现在这里。</p></div>}</div></div></div>}
     </div>
   );
 }

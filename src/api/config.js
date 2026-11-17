@@ -6,6 +6,16 @@
 
 export const API_BASE = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '');
 
+/* 服务端资源路径 → 浏览器可用的绝对地址。
+   服务端返回的图片 URL 是相对路径(/api/uploads/...),
+   跨域部署(前端静态站 + 独立后端域名)时 <img> 必须拼上 API_BASE;
+   data:/blob:/绝对 URL 原样返回。 */
+export function resolveApiUrl(path) {
+  if (!path) return path;
+  if (path.startsWith('data:') || path.startsWith('blob:') || /^https?:\/\//.test(path)) return path;
+  return `${API_BASE}${path}`;
+}
+
 let currentMode = 'checking'; // checking | server | local
 
 export function getMode() {
