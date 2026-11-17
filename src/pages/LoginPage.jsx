@@ -112,8 +112,12 @@ export function LoginPage() {
         <p className="xsmall muted login-note">
           登录后截图、历史记录与待办将同步到云端,多设备共享。
           <br />
-          未部署后端?去掉后端后应用自动回到本地 Demo 模式。
+          云端服务不可用时,应用会自动进入本地演示模式。
         </p>
+
+        <button type="button" className="login-guide-link" onClick={() => navigate('/guide')}>
+          首次使用?查看使用指南 →
+        </button>
       </div>
     </div>
   );

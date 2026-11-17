@@ -62,6 +62,7 @@ npm run server:test   # 后端:认证轮换 / 事务 / 越权隔离 / 上传魔�
 
 | 文档 | 内容 |
 | --- | --- |
+| [docs/USER_GUIDE.md](docs/USER_GUIDE.md) | **用户使用指南**:快速上手、各页面功能、隐私与常见问题(面向网站访客) |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | 数据模型、REST API 设计、安全设计、分析流水线 |
 | [docs/COSTS.md](docs/COSTS.md) | **免费优先方案 + 最便宜付费兜底对照表**(附官网价格页链接,部署前核实) |
 | [docs/DEPLOY.md](docs/DEPLOY.md) | Docker Compose 部署、Nginx + HTTPS、上线前安全检查清单、备份 |

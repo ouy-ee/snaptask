@@ -7,6 +7,7 @@ import { AnalysisPage } from './pages/AnalysisPage';
 import { ResultsPage } from './pages/ResultsPage';
 import { LoginPage } from './pages/LoginPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { GuidePage } from './pages/GuidePage';
 import { StepRail } from './components/StepRail';
 import { ToastRegion } from './components/Toast';
 import { ConfirmDialog } from './components/ConfirmDialog';
@@ -52,6 +53,7 @@ function useStageSync() {
 function Shell() {
   const { state, actions } = useStore();
   const [recordsOpen, setRecordsOpen] = useState(false);
+  const navigate = useNavigate();
   useStageSync();
 
   return (
@@ -75,6 +77,7 @@ function Shell() {
           {state.images.length > 0 && (
             <span className="nav-count tabular">{state.images.length} 张图幅</span>
           )}
+          <button type="button" className="guide-nav-link" onClick={() => navigate('/guide')}><Icons.info size={14} />使用指南</button>
           <button type="button" className="repo-chip" onClick={() => setRecordsOpen(true)}><Icons.clock size={14} />上传历史记录</button>
           <AccountCenter />
         </div>
@@ -109,6 +112,7 @@ export default function App() {
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/guide" element={<GuidePage />} />
           <Route path="/*" element={<Root />} />
         </Routes>
       </StoreProvider>

@@ -1,0 +1,127 @@
+/* ============================================================
+   使用指南页(/guide):独立文档页,复用设计系统 token
+   ============================================================ */
+
+.guide-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 var(--s-5) var(--s-9);
+}
+
+.guide-topbar {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-4) 0;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: var(--s-7);
+}
+
+.guide-topbar .guide-back { margin-left: auto; }
+
+/* ---------- 内容排版 ---------- */
+
+.guide-content { color: var(--ink); font-size: var(--fs-md); line-height: 1.75; }
+
+.guide-content .guide-title {
+  font-size: var(--fs-3xl);
+  margin: 0 0 var(--s-3);
+}
+
+.guide-content .guide-quote {
+  margin: 0 0 var(--s-6);
+  padding: var(--s-3) var(--s-4);
+  background: var(--surface-2);
+  border-left: 3px solid var(--copper);
+  border-radius: 0 var(--r-md) var(--r-md) 0;
+  color: var(--ink-2);
+}
+
+.guide-content .guide-h2 {
+  font-size: var(--fs-2xl);
+  margin: var(--s-8) 0 var(--s-4);
+  padding-bottom: var(--s-2);
+  border-bottom: 1px solid var(--line);
+}
+
+.guide-content .guide-h3 {
+  font-size: var(--fs-xl);
+  margin: var(--s-6) 0 var(--s-3);
+  color: var(--green-strong);
+}
+
+.guide-content p { margin: 0 0 var(--s-4); }
+
+.guide-content .guide-ul,
+.guide-content .guide-ol {
+  margin: 0 0 var(--s-4);
+  padding-left: var(--s-6);
+}
+
+.guide-content .guide-ul li,
+.guide-content .guide-ol li { margin-bottom: var(--s-2); }
+
+.guide-content li::marker { color: var(--copper); }
+
+/* ---------- 表格 ---------- */
+
+.guide-table-wrap { overflow-x: auto; margin: var(--s-4) 0 var(--s-6); }
+
+.guide-content .guide-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  font-size: var(--fs-md);
+}
+
+.guide-content .guide-table th,
+.guide-content .guide-table td {
+  padding: var(--s-3) var(--s-4);
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+.guide-content .guide-table th {
+  background: var(--surface-2);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.guide-content .guide-table tr:last-child td { border-bottom: none; }
+
+/* ---------- 入口:应用顶栏 ---------- */
+
+.guide-nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+  background: none;
+  border: none;
+  color: var(--ink-2);
+  font-size: var(--fs-sm);
+  font-family: var(--font-ui);
+  cursor: pointer;
+  padding: var(--s-1) var(--s-2);
+  border-radius: var(--r-sm);
+}
+
+.guide-nav-link:hover { color: var(--ink); background: var(--surface-3); }
+
+/* ---------- 入口:登录页 ---------- */
+
+.login-guide-link {
+  display: block;
+  margin: var(--s-4) auto 0;
+  background: none;
+  border: none;
+  color: var(--info);
+  font-size: var(--fs-sm);
+  font-family: var(--font-ui);
+  cursor: pointer;
+  padding: 0;
+}
+
+.login-guide-link:hover { text-decoration: underline; }
