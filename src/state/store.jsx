@@ -1507,6 +1507,8 @@ export function StoreProvider({ children, boot = true, testState = null }) {
   /* 多标签页同步 + 页面重新可见时重拉(断网恢复) */
   const refreshServerData = useCallback(async () => {
     if (getMode() !== 'server') return;
+    // 退出登录后不再用空 Authorization 请求受保护接口。
+    if (!getTokens()?.accessToken && !getTokens()?.refreshToken) return;
     try {
       const data = await serverApi.bootstrap();
       dispatch({ type: 'SYNC_SET', folders: data.folders, history: data.history, urgentTasks: data.tasks, archives: data.archives });
@@ -1520,6 +1522,8 @@ export function StoreProvider({ children, boot = true, testState = null }) {
       if (scope === 'auth') {
         clearTokens();
         dispatch({ type: 'AUTH_SET', user: null });
+        // auth 广播代表退出登录,不应继续刷新需要鉴权的业务数据。
+        return;
       }
       refreshServerData();
     });
