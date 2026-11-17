@@ -14,6 +14,19 @@ function ContentTags({ result }) {
   return <span className="content-tags">{getContentTags(result).map((tag) => <span className={`content-tag ${tag === '待办' ? 'tag-task' : 'tag-info'}`} key={tag}>{tag === '待办' ? '待办事项' : '资料整理'}</span>)}</span>;
 }
 
+function resolveSceneType(result) {
+  const text = [
+    result.summary?.oneLiner?.text,
+    ...(result.facts || []).map((item) => `${item.label || ''}${item.value || ''}`),
+    ...(result.keyFacts || []).map((item) => item.text || ''),
+  ].join('');
+  const knowledgeSignal = /课程|教程|知识|规则|定义|概念|类型|语法|函数|变量|接口|参数|公式|原理|示例|注意事项|默认值|数据类型/.test(text);
+  if (knowledgeSignal && !(result.tasks || []).length) return 'KNOWLEDGE';
+  if (result.scene_type === 'KNOWLEDGE' || result.scene_type === 'COMPARISON' || result.scene_type === 'TASK') return result.scene_type;
+  if (result.comparison?.rows?.length) return 'COMPARISON';
+  return (result.tasks || []).length ? 'TASK' : 'KNOWLEDGE';
+}
+
 function ExportPopover({ result, onClose, onExport }) {
   const [selected, setSelected] = useState({ summary: true, tasks: true, facts: false, comparison: result.scene_type === 'COMPARISON' });
   const [archive, setArchive] = useState(true);
@@ -53,6 +66,7 @@ function InlineSourcePanel({ state, actions, onAddNew, onReplace, onDelete, onOp
 export function ResultsPage() {
   const { state, actions } = useStore();
   const result = state.analysis?.result;
+  const sceneType = result ? resolveSceneType(result) : 'KNOWLEDGE';
   const partial = state.analysis?.status === 'partial_success';
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
@@ -125,8 +139,8 @@ export function ResultsPage() {
         <main className="res-center result-main-content">
           <div className="summary-with-tags"><SummaryPanel summary={result.summary} warnings={result.warnings} /><ContentTags result={result} /></div>
           <div className="scene-cards">
-            {(result.scene_type === 'KNOWLEDGE') ? <KnowledgeCard result={result} /> : <TaskList tasks={result.tasks} suggestions={result.summary?.suggestions || []} onSync={() => actions.syncTasks(result.tasks)} />}
-            {result.scene_type === 'COMPARISON' && <ComparisonTable comparison={result.comparison} />}
+            {(sceneType === 'KNOWLEDGE') ? <KnowledgeCard result={result} /> : <TaskList tasks={result.tasks} suggestions={result.summary?.suggestions || []} onSync={() => actions.syncTasks(result.tasks)} />}
+            {sceneType === 'COMPARISON' && <ComparisonTable comparison={result.comparison} />}
           </div>
           <section className={`details-drawer ${detailsOpen ? 'open' : ''}`}>
             <button type="button" className="details-toggle" onClick={() => setDetailsOpen(!detailsOpen)} aria-expanded={detailsOpen}>

@@ -31,7 +31,7 @@ ${ocrSections}
 
 {
   "scenario": "success" 或 "partial"(存在识别不清/低置信/信息缺失时用 partial),
-  "scene_type": "TASK" | "COMPARISON" | "OTHER"(以任务清单为主=TASK,以多对象对比为主=COMPARISON),
+  "scene_type": "TASK" | "KNOWLEDGE" | "COMPARISON" | "OTHER"(课程/教程/技术知识/规则说明=KNOWLEDGE,以任务清单为主=TASK,以多对象对比为主=COMPARISON),
   "content_tags": ["待办","资料"] 的子集(有任务加"待办",有可留存信息加"资料"),
   "summary": {
     "oneLiner": { "text": "2-3 句话总结:是什么、关键结论、有无冲突", "src": [1,2] },
@@ -71,6 +71,9 @@ ${ocrSections}
 规则:至少两处来源给出不同值 → 必须用冲突结构,并生成一条 type="conflict" 的 warning(severity=high,related 指向该 task/fact)。
 
 ## 其他输出要求
+- **场景判断优先于任务填充**:课程、教程、技术文档、概念解释、规则说明、代码/API 说明、公式或知识点截图必须标记为 KNOWLEDGE;此时 tasks 必须为空数组,把内容放入 facts/keyFacts,不要为了填任务而编造待办。
+- 会议纪要、工单、计划、通知中存在明确行动项时标记为 TASK;只有明确的行动、负责人或截止时间才生成 tasks。
+- 图片主要是知识点表格、定义、示例或教学内容,即使出现“完成/准备”等普通词语,也不要误判为 TASK。
 - confidence 取 0 到 1 的小数;低于 0.75 的信息 status 用 "uncertain"。
 - facts 数组固定包含:标题、主题、关键实体、时间、角色、地点、约束条件(没出现就 value=null, status="not-mentioned")。
 - 识别不清的图幅:相关字段标 uncertain,并在 warnings 中生成 type="low-quality" 条目(related.kind="image",related.id 为图序号字符串如 "3",label 为图文件名)。

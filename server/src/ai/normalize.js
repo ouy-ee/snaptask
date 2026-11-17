@@ -179,7 +179,7 @@ const summary = z
 
 const rawResult = z.object({
   scenario: z.enum(['success', 'partial']).catch('success'),
-  scene_type: z.enum(['TASK', 'COMPARISON', 'OTHER']).catch('TASK'),
+  scene_type: z.enum(['TASK', 'KNOWLEDGE', 'COMPARISON', 'OTHER']).catch('OTHER'),
   content_tags: z.array(z.string()).catch([]),
   summary,
   facts: z.array(fact).catch([]),
