@@ -62,12 +62,14 @@ function loadTokens() {
 }
 
 let tokens = loadTokens();
+let tokenGeneration = 0;
 
 export function getTokens() {
   return tokens;
 }
 
 export function setTokens(next) {
+  tokenGeneration += 1;
   tokens = next || null;
   try {
     if (next) localStorage.setItem(TOKEN_KEY, JSON.stringify(next));
@@ -158,6 +160,7 @@ async function rawFetch(path, { method = 'GET', body, headers = {}, timeoutMs = 
 /* ---------- 对外请求(自动带令牌,401 过期自动刷新重试一次) ---------- */
 
 export async function apiRequest(path, { method = 'GET', body, headers = {}, timeoutMs = 30000, retried = false } = {}) {
+  const requestGeneration = tokenGeneration;
   const h = { ...headers };
   if (body !== undefined && !(body instanceof FormData) && typeof body !== 'string') {
     h['Content-Type'] = 'application/json';
@@ -175,6 +178,10 @@ export async function apiRequest(path, { method = 'GET', body, headers = {}, tim
         return await apiRequest(path, { method, body, headers, timeoutMs, retried: true });
       } catch (refreshErr) {
         if (refreshErr instanceof ApiError && refreshErr.status === 401) {
+          // 旧请求可能在新登录完成后才返回 401,此时不能把新会话判定为过期。
+          if (requestGeneration !== tokenGeneration) {
+            return apiRequest(path, { method, body, headers, timeoutMs, retried: true });
+          }
           emitSessionExpired();
           throw new SessionExpiredError();
         }
