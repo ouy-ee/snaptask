@@ -123,7 +123,8 @@ export async function runAnalysisJob(ctx, jobId, isCancelled) {
     let result;
     try {
       const okImages = images.filter((i) => i.ok);
-      const prompt = buildAnalysisPrompt({ names: images.map((i) => i.name), ocrTexts });
+      const promptArgs = { names: images.map((i) => i.name), ocrTexts };
+      const prompt = buildAnalysisPrompt(promptArgs);
 
       // 视觉调用期间轮询取消标记(调用本身不可中断,结果作废)
       let cancelledDuringVision = false;
@@ -163,10 +164,22 @@ export async function runAnalysisJob(ctx, jobId, isCancelled) {
         actions: ['查看该图幅', '重试识别'],
       }));
       const degraded = failedImages.length > 0;
-      result = normalizeResult(text, imageIds, {
+      const normalizeExtra = {
         scenario: degraded ? 'partial' : undefined,
         warnings: extraWarnings,
-      });
+      };
+      try {
+        result = normalizeResult(text, imageIds, normalizeExtra);
+      } catch (err) {
+        if (err.code !== 'VISION_BAD_JSON') throw err;
+        logger.warn({ jobId }, '模型首次输出不是完整 JSON,使用精简提示词重试');
+        const compactText = await vision.complete({
+          images: okImages.map((i) => ({ mime: i.mime, buffer: i.buffer })),
+          prompt: buildAnalysisPrompt({ ...promptArgs, compact: true }),
+          userId: job.userId,
+        });
+        result = normalizeResult(compactText, imageIds, normalizeExtra);
+      }
 
       /* ---------- Stage 4 成图 ---------- */
       job.update({ stage_index: 4, stage_label: STAGES[4].label, note: '正在生成结构化结果…' });

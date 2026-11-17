@@ -4,7 +4,7 @@
    并与前端结果模型(src/mock/data.js)完全对齐。
    ============================================================ */
 
-export function buildAnalysisPrompt({ names, ocrTexts }) {
+export function buildAnalysisPrompt({ names, ocrTexts, compact = false }) {
   const ocrSections = names
     .map((name, i) => {
       const text = ocrTexts[i]?.trim() || '(未提供 OCR 结果)';
@@ -25,7 +25,7 @@ ${ocrSections}
 3. **冲突必须显式呈现**:同一事实在不同图中数值不一致时(如截止日期图2写11-20、图4写11-25),用 conflict 结构同时保留两处值与各自来源,不要擅自选一个,也不要隐藏。
 4. **不确定要标注**:低置信信息标 status="uncertain" 并给出 0-1 置信度;完全没出现标 status="not-mentioned"、value 为 null。
 5. 只输出一个合法 JSON 对象,不要 markdown 代码块,不要任何解释文字。
-6. 输出长度受限:请保持文本精炼(每条 fact/suggestion 一句话),若长度不够,优先保证 JSON 完整——先精简 warnings 与 description,再省略次要条目,绝不能截断成非法 JSON。
+6. 输出长度受限:请保持文本精炼,优先保证 JSON 完整,绝不能截断成非法 JSON。${compact ? '这是精简重试:只保留最重要的 1 条摘要、最多 5 条 facts、最多 5 条 keyFacts、最多 3 条 tasks,所有 description/warnings 尽量为空或省略。' : ''}
 
 ## 输出 JSON 结构(字段齐全,数组可为空但必须存在)
 
@@ -75,7 +75,8 @@ ${ocrSections}
 - 会议纪要、工单、计划、通知中存在明确行动项时标记为 TASK;只有明确的行动、负责人或截止时间才生成 tasks。
 - 图片主要是知识点表格、定义、示例或教学内容,即使出现“完成/准备”等普通词语,也不要误判为 TASK。
 - confidence 取 0 到 1 的小数;低于 0.75 的信息 status 用 "uncertain"。
-- facts 数组固定包含:标题、主题、关键实体、时间、角色、地点、约束条件(没出现就 value=null, status="not-mentioned")。
+- facts 只输出截图中实际出现且有价值的字段,最多 7 条;不要为了补齐字段而输出大量 not-mentioned。
+- KNOWLEDGE 场景只保留知识点和规则, tasks 必须为空; COMPARISON 场景只保留对比数据; TASK 场景才输出任务。
 - 识别不清的图幅:相关字段标 uncertain,并在 warnings 中生成 type="low-quality" 条目(related.kind="image",related.id 为图序号字符串如 "3",label 为图文件名)。
 - 多图重复出现的同一事实:合并为一条,src 列出全部来源,并生成 type="duplicate" 的 warning(severity=low)。
 - 任务缺负责人/缺截止时间 → 分别生成 type="missing-assignee" / "missing-due" 的 warning。
