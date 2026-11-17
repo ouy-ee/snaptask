@@ -161,6 +161,8 @@ async function rawFetch(path, { method = 'GET', body, headers = {}, timeoutMs = 
 
 export async function apiRequest(path, { method = 'GET', body, headers = {}, timeoutMs = 30000, retried = false } = {}) {
   const requestGeneration = tokenGeneration;
+  // 登录、注册、刷新和退出本身的 401 是业务结果,不能再次触发旧 Token 刷新。
+  const isAuthEndpoint = path.startsWith('/api/auth/');
   const h = { ...headers };
   if (body !== undefined && !(body instanceof FormData) && typeof body !== 'string') {
     h['Content-Type'] = 'application/json';
@@ -172,7 +174,7 @@ export async function apiRequest(path, { method = 'GET', body, headers = {}, tim
   try {
     return await rawFetch(path, { method, body: payload, headers: h, timeoutMs });
   } catch (err) {
-    if (err instanceof ApiError && err.status === 401 && !retried) {
+    if (err instanceof ApiError && err.status === 401 && !retried && !isAuthEndpoint) {
       try {
         await refreshSession();
         return await apiRequest(path, { method, body, headers, timeoutMs, retried: true });

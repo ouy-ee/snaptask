@@ -74,6 +74,15 @@ describe('apiRequest', () => {
     expect(err.code).toBe('EMAIL_TAKEN');
   });
 
+  it('登录密码错误 → 直接返回业务错误,不刷新旧会话', async () => {
+    setTokens({ accessToken: 'old', refreshToken: 'old-refresh' });
+    fetchMock.mockResolvedValue(jsonResponse({ error: { code: 'INVALID_PASSWORD', message: '密码不正确' } }, 401));
+    const err = await apiRequest('/api/auth/login', { method: 'POST', body: { email: 'a@b.com', password: 'wrong' } }).catch((e) => e);
+    expect(err).toBeInstanceOf(ApiError);
+    expect(err.code).toBe('INVALID_PASSWORD');
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
   it('网络失败 → OfflineError', async () => {
     fetchMock.mockRejectedValue(new TypeError('Failed to fetch'));
     const err = await apiRequest('/api/health').catch((e) => e);
